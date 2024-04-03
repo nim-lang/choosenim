@@ -78,6 +78,14 @@ wget -qO - https://nim-lang.org/choosenim/init.sh | sh
               script to install by specifying the ``CHOOSENIM_CHOOSE_VERSION``
               environment variable.
 
+**MacOs Note** If `choosenim` has been installed successfully, and you're still not able to use Nim or any of the tooling (ex: `nim --v`) follow these steps in your terminal:
+- modify or create the `~/.zshrc` file with this line: `nano ~/.zshrc`
+- add the following line to setup the PATH correctly: `export PATH="$HOME/.nimble/bin:$PATH"`
+- make sure the current terminal session picks up the changes with this line: `source ~/.zshrc`
+- now validate everything works properly with: `nim --v`
+
+By creating a `.zshrc` file and adding the path to `~/.nimble/bin`, you're ensuring that zsh (terminal) knows where to look for your Nim executables and other tooling every time it starts up.
+
 ## How choosenim works
 
 Similar to the likes of ``rustup`` and ``pyenv``, ``choosenim`` is a
