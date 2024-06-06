@@ -1,10 +1,10 @@
 # This workflow will automatically upload a binary artifact when a release/tag  is created
 name: Build and upload binary
 
-on:  
-  # allow to build manually 
+on:
+  # allow to build manually
   workflow_dispatch:
-  # build automatically when pushing a tag 
+  # build automatically when pushing a tag
   push:
     branches:
       - "!*"
@@ -13,7 +13,7 @@ on:
 
 jobs:
   # ----------------------------------------------------------------------------
-  # this will checkout and build nim stable from gh repository on manylinux2014 / CentOS 7 
+  # this will checkout and build nim stable from gh repository on manylinux2014 / CentOS 7
   build-linux:
     runs-on: ubuntu-latest
     container:
@@ -22,6 +22,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build binary
         run: |
+          git config --global --add safe.directory ${{ runner.workspace }}/choosenim/choosenim
           CHOOSENIM_DIR=`pwd`
           # checking out and compiling nim last stable from git tag
           mkdir -p nimDir
@@ -38,12 +39,11 @@ jobs:
           nimble install -y
           nimble build
           ls bin/*
-          
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          overwrite: true    
+          overwrite: true
           tag: ${{ github.ref }}
           asset_name: choosenim-manylinux2014
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
@@ -60,15 +60,14 @@ jobs:
           nimble install -y
           nimble build
           dir bin/*
-          
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          overwrite: true    
+          overwrite: true
           tag: ${{ github.ref }}
           asset_name: choosenim-windows
-          file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe     
+          file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
 
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
@@ -79,15 +78,15 @@ jobs:
       - uses: iffy/install-nim@v4.0.1
       - name: Build binary
         run: |
+          git config --global --add safe.directory ${{ runner.workspace }}/choosenim/choosenim
           nimble install -y
           nimble build
           ls bin/*
-          
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          overwrite: true    
+          overwrite: true
           tag: ${{ github.ref }}
           asset_name: choosenim-macos
-          file: ${{ runner.workspace }}/choosenim/bin/choosenim      
+          file: ${{ runner.workspace }}/choosenim/bin/choosenim
