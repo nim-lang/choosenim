@@ -38,7 +38,7 @@ To display which versions are currently installed:
 $ choosenim show
   Selected: 1.6.6
    Channel: stable
-      Path: /home/dom/.choosenim/toolchains/nim-1.6.6
+      Path: /home/user/.choosenim/toolchains/nim-1.6.6
 
   Versions:
             #devel
@@ -54,16 +54,18 @@ Versions can be selected via `choosenim 1.6.6` or by branch/tag name via `choose
 ### Windows
 
 Download the latest Windows version from the
-[releases](https://github.com/dom96/choosenim/releases) page (the .zip file, for example here is [``v0.7.4``](https://github.com/dom96/choosenim/releases/download/v0.7.4/choosenim-0.7.4_windows_amd64.zip)).
+[releases](https://github.com/nim-lang/choosenim/releases) page (the .zip file, for example here is [``v0.8.4``](https://github.com/nim-lang/choosenim/releases/download/v0.8.4/choosenim-0.8.4_windows_amd64.zip)).
 
 Extract the zip archive and run the ``runme.bat`` script. Follow any on screen
 prompts and enjoy your new Nim and choosenim installation.
 
 ----
 
-There is also a third-party project to provide an installer for choosenim,
+There was also a third-party project to provide an installer for choosenim,
 you can find it [here](https://gitlab.com/ArMour85/choosenim-setup) (note that
-this isn't vetted by the Nim team so you do so at your own risk).
+this isn't vetted by the Nim team so you do so at your own risk). This project
+did however target the old repository for Choosenim, so it doesn't work with
+this repository without modification.
 
 ### Unix
 
@@ -183,7 +185,7 @@ Options:
 ## Analytics
 
 Check out the
-[analytics](https://github.com/dom96/choosenim/blob/master/analytics.md)
+[analytics](https://github.com/nim-lang/choosenim/blob/master/analytics.md)
 document for details.
 
 ## License

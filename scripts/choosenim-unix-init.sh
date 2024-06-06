@@ -9,7 +9,7 @@
 set -u
 set -e
 
-url_prefix="https://github.com/dom96/choosenim/releases/download/"
+url_prefix="https://github.com/nim-lang/choosenim/releases/download/"
 
 temp_prefix="${TMPDIR:-/tmp}"
 
