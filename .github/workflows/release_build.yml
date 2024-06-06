@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build binary
         run: |
-          git config --global --add safe.directory ${{ runner.workspace }}/choosenim/choosenim
+          git config --global --add safe.directory .
           CHOOSENIM_DIR=`pwd`
           # checking out and compiling nim last stable from git tag
           mkdir -p nimDir
