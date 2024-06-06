@@ -1,4 +1,4 @@
-import nimblepkg/version
+import nimblepkg/common
 
 type
   ChooseNimError* = object of NimbleError
@@ -22,3 +22,15 @@ const
     "gdb",
     "ld"
   ]
+
+proc getOutputInfo*(err: ref NimbleError): (string, string) =
+  var error = ""
+  var hint = ""
+  error = err.msg
+  when not defined(release):
+    let stackTrace = getStackTrace(err)
+    error = stackTrace & "\n\n" & error
+  if not err.isNil:
+    hint = err.hint
+
+  return (error, hint)

@@ -4,7 +4,7 @@ import os, strutils, algorithm
 
 import nimblepkg/[cli, version]
 import nimblepkg/common as nimbleCommon
-from nimblepkg/packageinfo import getNameVersion
+from nimblepkg/tools import getNameVersionChecksum
 
 import choosenimpkg/[download, builder, switcher, common, cliparams, versions]
 import choosenimpkg/[utils, channel, telemetry]
@@ -206,14 +206,14 @@ proc update(params: CliParams) =
 proc show(params: CliParams) =
   let channel = getCurrentChannel(params)
   let path = getSelectedPath(params)
-  let (_, version) = getNameVersion(path)
+  let (_, version, _) = getNameVersionChecksum(path)
   if params.commands.len == 2:
     let whatToShow = params.commands[1]
     if whatToShow.toLowerAscii() == "path":
       echo path
       return
-  if version != "":
-    display("Selected:", version, priority = HighPriority)
+  if $version != "":
+    display("Selected:", $version, priority = HighPriority)
 
   if channel.len > 0:
     display("Channel:", channel, priority = HighPriority)
@@ -224,8 +224,8 @@ proc show(params: CliParams) =
 
   var versions: seq[string] = @[]
   for path in walkDirs(params.getInstallDir() & "/*"):
-    let (_, versionAvailable) = getNameVersion(path)
-    versions.add(versionAvailable)
+    let (_, versionAvailable, _) = getNameVersionChecksum(path)
+    versions.add($versionAvailable)
 
   if versions.len() > 1:
     versions.sort(system.cmp, Descending)
@@ -239,7 +239,7 @@ proc show(params: CliParams) =
     echo ""
     display("Versions:", " ", priority = HighPriority)
     for ver in versions:
-      if ver == version:
+      if ver == $version:
         display("*", ver, Success, HighPriority)
       else:
         display("", ver, priority = HighPriority)

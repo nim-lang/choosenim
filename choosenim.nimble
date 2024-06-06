@@ -13,7 +13,7 @@ skipExt = @["nim"]
 
 # Dependencies
 
-requires "nim 1.4.0", "nimble 0.12.0"
+requires "nim", "nimble"
 when defined(macosx):
   requires "libcurl >= 1.0.0"
 requires "analytics >= 0.3.0"

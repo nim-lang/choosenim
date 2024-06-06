@@ -1,7 +1,7 @@
 import os, strutils, osproc, pegs
 
 import nimblepkg/[cli, version, options]
-from nimblepkg/packageinfo import getNameVersion
+from nimblepkg/tools import getNameVersionChecksum
 
 import cliparams, common
 
@@ -240,5 +240,5 @@ proc switchTo*(filepath: string, params: CliParams) =
 
 proc getSelectedVersion*(params: CliParams): Version =
   let path = getSelectedPath(params)
-  let (_, version) = getNameVersion(path)
-  return version.newVersion
+  let (_, version, _) = getNameVersionChecksum(path)
+  return ($version).newVersion

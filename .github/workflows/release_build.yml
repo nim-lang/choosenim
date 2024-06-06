@@ -78,7 +78,7 @@ jobs:
       - uses: iffy/install-nim@v4.0.1
       - name: Build binary
         run: |
-          git config --global --add safe.directory ${{ runner.workspace }}/choosenim/choosenim
+          git config --global --add safe.directory .
           nimble install -y
           nimble build
           ls bin/*

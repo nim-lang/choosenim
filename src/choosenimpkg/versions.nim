@@ -1,7 +1,7 @@
 import os, algorithm, sequtils
 
 import nimblepkg/version
-from nimblepkg/packageinfo import getNameVersion
+from nimblepkg/tools import getNameVersionChecksum
 
 import download, cliparams, channel, switcher
 
@@ -14,8 +14,8 @@ proc getLocalVersions(params: CliParams): seq[Version] =
   var localVersions: seq[Version] = @[] 
   # check for the locally installed versions of Nim,
   for path in walkDirs(params.getInstallDir() & "/*"):
-    let (_, version) = getNameVersion(path)
-    let displayVersion = version.newVersion
+    let (_, version, _) = getNameVersionChecksum(path)
+    let displayVersion = ($version).newVersion
     if isVersionInstalled(params, displayVersion):
       localVersions.add(displayVersion)
   localVersions.sort(cmpVersions, SortOrder.Descending)
@@ -37,8 +37,8 @@ proc getAvailableVersions*(params: CliParams): seq[Version] =
 
 proc getCurrentVersion*(params: CliParams): Version =
   let path = getSelectedPath(params)
-  let (_, currentVersion) = getNameVersion(path)
-  return currentVersion.newVersion
+  let (_, currentVersion, _) = getNameVersionChecksum(path)
+  return ($currentVersion).newVersion
 
 proc getLatestVersion*(params: CliParams): Version =
   let channel = getCurrentChannel(params)

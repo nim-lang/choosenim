@@ -6,8 +6,7 @@ import strutils, os, osproc
 
 import nimblepkg/[cli, options, version]
 import nimblepkg/common as nimbleCommon
-import cliparams
-from common import ChooseNimError, mingwProxies
+import cliparams, common
 
 proc getSelectedPath(params: CliParams): string =
   var path = ""
