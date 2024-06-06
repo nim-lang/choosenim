@@ -1,5 +1,13 @@
 # Anonymous gathering of user analytics
 
+Currently analytics is disabled for Choosenim. It is expected to be turned back
+on once we've sorted out if we want to continue with Google analytics or not and
+a new account has been set up for whatever analytics provider we choose. Your
+choice about whether to participate in analytics is still recorded locally so
+updating choosenim in the future might re-enable analytics if you have agreed to
+it. The rest of this document is kept in its original form for legacy, but does
+no longer apply:
+
 Starting with version 0.3.0, choosenim has the ability to gather anonymous
 aggregate user behaviour analytics and to report them to Google Analytics.
 

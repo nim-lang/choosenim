@@ -91,45 +91,52 @@ proc analyticsPrompt(params: CliParams) =
 proc report*(obj: Event | Timing | ref Exception, params: CliParams)
 proc loadAnalytics*(params: CliParams): bool =
   ## Returns ``true`` if ``analytics`` object has been loaded successfully.
-  if getEnv("CHOOSENIM_NO_ANALYTICS") == "1" or getEnv("DO_NOT_TRACK") == "1":
-    display("Info:",
-            "Not sending analytics because either CHOOSENIM_NO_ANALYTICS or DO_NOT_TRACK is set.",
-            priority=MediumPriority)
-    return false
+  display("Info:",
+          "Not sending analytics because they are currently disabled. If turned back on in a future update your preference is to " &
+          (if getEnv("CHOOSENIM_NO_ANALYTICS") == "1" or getEnv("DO_NOT_TRACK") == "1": "not send" else: "send") & " analytics.",
+          priority=MediumPriority)
+  return false
 
-  if params.isNil:
-    raise newException(ValueError, "Params is nil.")
+  when false: # TODO: Re-enable once analytics is set up again
+    if getEnv("CHOOSENIM_NO_ANALYTICS") == "1" or getEnv("DO_NOT_TRACK") == "1":
+      display("Info:",
+              "Not sending analytics because either CHOOSENIM_NO_ANALYTICS or DO_NOT_TRACK is set.",
+              priority=MediumPriority)
+      return false
 
-  if not params.analytics.isNil:
+    if params.isNil:
+      raise newException(ValueError, "Params is nil.")
+
+    if not params.analytics.isNil:
+      return true
+
+    let analyticsFile = params.getAnalyticsFile()
+    var prompted = false
+    if not fileExists(analyticsFile):
+      params.analyticsPrompt()
+      prompted = true
+
+    let clientID = readFile(analyticsFile)
+    if clientID.len == 0:
+      display("Info:",
+              "No client ID found in '$1', not sending analytics." %
+                analyticsFile,
+              priority=LowPriority)
+      return false
+
+    params.analytics = newPuppyAnalytics("UA-105812497-1", clientID, "choosenim",
+                                         chooseNimVersion, proxy = getProxy(),
+                                         timeout=5)
+
+    # Report OS info only once.
+    if prompted:
+      when defined(windows):
+        let systemVersion = $getVersionInfo()
+      else:
+        let systemVersion = getSystemVersion()
+      report(initEvent(OSInfoEvent, systemVersion), params)
+
     return true
-
-  let analyticsFile = params.getAnalyticsFile()
-  var prompted = false
-  if not fileExists(analyticsFile):
-    params.analyticsPrompt()
-    prompted = true
-
-  let clientID = readFile(analyticsFile)
-  if clientID.len == 0:
-    display("Info:",
-            "No client ID found in '$1', not sending analytics." %
-              analyticsFile,
-            priority=LowPriority)
-    return false
-
-  params.analytics = newPuppyAnalytics("UA-105812497-1", clientID, "choosenim",
-                                       chooseNimVersion, proxy = getProxy(),
-                                       timeout=5)
-
-  # Report OS info only once.
-  if prompted:
-    when defined(windows):
-      let systemVersion = $getVersionInfo()
-    else:
-      let systemVersion = getSystemVersion()
-    report(initEvent(OSInfoEvent, systemVersion), params)
-
-  return true
 
 proc reportAsyncError(fut: Future[void], params: CliParams) =
   fut.callback =
