@@ -29,7 +29,7 @@ jobs:
           STABLE_NIM=`curl -sSL http://nim-lang.org/channels/stable | xargs`
           git clone --depth 1 --branch v$STABLE_NIM https://github.com/nim-lang/Nim.git nimDir
           cd nimDir
-          . ci/funs.sh && nimBuildCsourcesIfNeeded CC=gcc ucpu='${{ matrix.cpu }}'
+          . ci/funs.sh && nimBuildCsourcesIfNeeded CC=gcc ucpu=amd64
           bin/nim c koch
           ./koch boot -d:release
           ./koch toolsnonimble
