@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build binary
         run: |
-          git config --global --add safe.directory .
+          git config --global --add safe.directory /__w/choosenim/choosenim
           CHOOSENIM_DIR=`pwd`
           # checking out and compiling nim last stable from git tag
           mkdir -p nimDir
@@ -78,7 +78,7 @@ jobs:
       - uses: iffy/install-nim@v4.0.1
       - name: Build binary
         run: |
-          git config --global --add safe.directory .
+          git config --global --add safe.directory /__w/choosenim/choosenim
           nimble install -y
           nimble build
           ls bin/*
