@@ -32,7 +32,8 @@ jobs:
           sh build_all.sh
           bin/nim c koch
           ./koch boot -d:release
-          ./koch tools
+          ./koch toolsnonimble
+          ./koch --latest nimble
           PATH=$PATH:`pwd`/bin
           # compile choosenim
           cd $CHOOSENIM_DIR
