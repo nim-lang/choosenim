@@ -40,7 +40,7 @@ jobs:
           overwrite: true
           tag: ${{ github.ref }}
           asset_name: choosenim-linux
-          file: ${{ runner.workspace }}/choosenim/bin/choosenim
+          file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
 
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
