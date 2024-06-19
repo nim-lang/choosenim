@@ -1,13 +1,17 @@
 # This workflow will automatically upload a binary artifact when a release/tag  is created
 name: Build and upload binary
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 on:
   # allow to build manually
   workflow_dispatch:
   # build automatically when pushing a tag
   push:
     branches:
-      - "!*"
+      - "master"
     tags:
       - "v*"
 
