@@ -28,7 +28,8 @@ jobs:
           NIMPATH=`pwd`/nim-$STABLE_NIM/bin
           PATH=$PATH:$NIMPATH
           # compile choosenim
-          cd $CHOOSENIM_DIR
+          ls -lah
+          cd choosenim
           nimble install -y
           nimble build --path:$NIMPATH
           ls bin/*
