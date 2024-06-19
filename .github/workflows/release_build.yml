@@ -25,7 +25,7 @@ jobs:
           STABLE_NIM=`curl -sSL http://nim-lang.org/channels/stable | xargs`
           curl -O https://nim-lang.org/download/nim-$STABLE_NIM-linux_x64.tar.xz
           tar -xvJf nim-$STABLE_NIM-linux_x64.tar.xz
-          NIMPATH=`pwd`/nim-$STABLE_NIM-linux_x64/bin
+          NIMPATH=`pwd`/nim-$STABLE_NIM/bin
           PATH=$PATH:$NIMPATH
           # compile choosenim
           cd $CHOOSENIM_DIR
