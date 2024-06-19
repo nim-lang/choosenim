@@ -19,7 +19,9 @@ jobs:
     container:
       image: quay.io/pypa/manylinux2014_x86_64
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          path: "choosenim"
       - name: Build binary
         run: |
           STABLE_NIM=`curl -sSL http://nim-lang.org/channels/stable | xargs`
