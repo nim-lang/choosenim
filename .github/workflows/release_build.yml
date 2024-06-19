@@ -60,7 +60,7 @@ jobs:
           dir bin/*
           mkdir zipfile
           mkdir zipfile/choosenim
-          cp bin/choosenim zipfile/choosenim/
+          cp bin/choosenim.exe zipfile/choosenim/
           cp scripts/runme.bat zipfile/
           Compress-Archive -Path zipfile/ -Destination choosenim-windows.zip
       - name: Upload binaries to release/tag
