@@ -58,14 +58,19 @@ jobs:
           nimble install -y
           nimble build
           dir bin/*
+          mkdir zipfile
+          mkdir zipfile/choosenim
+          cp bin/choosenim zipfile/choosenim/
+          cp scripts/runme.bat zipfile/
+          Compress-Archive -Path zipfile/ -Destination choosenim-windows.zip
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-windows
-          file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
+          asset_name: choosenim-windows.zip
+          file: ${{ runner.workspace }}/choosenim/choosenim-windows.zip
 
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
