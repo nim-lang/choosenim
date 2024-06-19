@@ -16,8 +16,6 @@ jobs:
   # this will checkout and build nim stable from gh repository on manylinux2014 / CentOS 7
   build-linux:
     runs-on: ubuntu-latest
-    container:
-      image: quay.io/pypa/manylinux2014_x86_64
     steps:
       - uses: actions/checkout@v3
         with:
@@ -41,7 +39,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-manylinux2014
+          asset_name: choosenim-linux
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
 
   # ----------------------------------------------------------------------------
