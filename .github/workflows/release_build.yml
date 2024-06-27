@@ -26,7 +26,7 @@ jobs:
           path: "choosenim"
       - name: Build binary
         run: |
-          STABLE_NIM=`curl -sSL http://nim-lang.org/channels/stable | xargs`
+          STABLE_NIM=`curl -sSL https://nim-lang.org/channels/stable | xargs`
           curl -O https://nim-lang.org/download/nim-$STABLE_NIM-linux_x64.tar.xz
           tar -xvJf nim-$STABLE_NIM-linux_x64.tar.xz
           NIMPATH=`pwd`/nim-$STABLE_NIM/bin
