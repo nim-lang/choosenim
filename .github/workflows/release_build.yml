@@ -21,7 +21,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           path: "choosenim"
       - name: Build binary
@@ -51,7 +51,7 @@ jobs:
   build-win32:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: iffy/install-nim@v5.0.5
       - name: Build binary
         run: |
@@ -77,7 +77,7 @@ jobs:
   build-macos:
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: iffy/install-nim@v5.0.5
       - name: Build binary
         run: |
