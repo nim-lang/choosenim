@@ -52,7 +52,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: iffy/install-nim@v5.0.4
+      - uses: iffy/install-nim@v5.0.5
       - name: Build binary
         run: |
           nimble install -y
@@ -78,7 +78,7 @@ jobs:
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
-      - uses: iffy/install-nim@v5.0.4
+      - uses: iffy/install-nim@v5.0.5
       - name: Build binary
         run: |
           git config --global --add safe.directory /__w/choosenim/choosenim
