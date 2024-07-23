@@ -14,7 +14,7 @@ proc isRosetta*(): bool =
 proc isAppleSilicon(): bool =
   let (output, exitCode) = gorgeEx("uname -m")  # arch -x86_64 uname -m returns x86_64 on M1
   assert exitCode == 0, output
-  return output == "arm64" or isRosetta()
+  return output.strip() == "arm64" or isRosetta()
 
 when defined(macosx) and isAppleSilicon():
   switch("passC", "-Wno-incompatible-function-pointer-types")

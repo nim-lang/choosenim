@@ -54,7 +54,7 @@ proc isMacOSBelowBigSur(): bool =
 proc isAppleSilicon(): bool =
   let (output, exitCode) = execCmdEx("uname -m")  # arch -x86_64 uname -m returns x86_64 on M1
   assert exitCode == 0, output
-  return output == "arm64" or isRosetta()
+  return output.strip() == "arm64" or isRosetta()
 
 static:
   when defined(macosx):
@@ -76,12 +76,14 @@ else:
 
 proc proxyToUse(): string =
   when defined(macosx):
-    if not isMacOSBelowBigSur(): # it's big sur and above, so have to check Apple Silicon
-      if isAppleSilicon():
+    # it's big sur and above, so have to check Apple Silicon
+    if not isMacOSBelowBigSur() and isAppleSilicon():
         when declared(embeddedProxyExeArm): # embeddedProxyExeArm doesn't exist means choosenim was compiled on machine that doesn't support arm64
+          display("Debug:", "Using arm64 proxy", Warning, DebugPriority)
           return embeddedProxyExeArm
         display("Warning:", "Since choosenim is compiled on macOS that doesn't support arm64, choosenim proxies won't be able to install arm64 proxies.", Warning, DebugPriority)
   # normal linux, windows build ( the same as macos amd64 )
+  display("Debug:", "Using x86_64 proxy", Warning, DebugPriority)
   return embeddedProxyExe
 
 proc getInstallationDir*(params: CliParams, version: Version): string =
