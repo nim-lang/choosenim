@@ -30,7 +30,7 @@ proc isMacOSBelowBigSurCompileTime(): bool =
   const (versionOutput, _) = gorgeEx("sw_vers -productVersion")
   const currentVersion = versionOutput.split(".")
 
-  if currentVersion.len() < 1: return false # version should be at least 11, like this
+  if currentVersion.len() < 1: return false # version should be at least two digit like `11`
   let twoVersion = parseFloat(
     if currentVersion.len() == 1:
       currentVersion[0].strip()
@@ -43,7 +43,7 @@ proc isMacOSBelowBigSur(): bool =
   let currentVersion = versionOutput.split(".")
 
   if currentVersion.len() < 1:
-    return false # version should be at least 11 like this
+    return false # version should be at least two digit like `11`
   let twoVersion = parseFloat(
     if currentVersion.len() == 1:
       currentVersion[0].strip()
@@ -69,19 +69,20 @@ when defined(macosx):
   when not isMacOSBelowBigSurCompileTime():
     const embeddedProxyExeArm: string = staticRead("proxyexe-arm64".addFileExt(ExeExt))
   else:
-    {.warning: "Since choosenim is compiled on macOS that doesn't support arm64, choosenim proxies won't be able to produce arm64 result.".}
+    {.warning: "Since choosenim is compiled on macOS version below BigSur, choosenim won't be able to produce arm64 proxies.".}
   const embeddedProxyExe = staticRead("proxyexe-amd64".addFileExt(ExeExt))
 else:
   const embeddedproxyExe: string = staticRead("proxyexe".addFileExt(ExeExt))
 
 proc proxyToUse(): string =
   when defined(macosx):
-    # it's big sur and above, so have to check Apple Silicon
+    # if user machine is running big sur and above, we have to check if it's Apple Silicon
     if not isMacOSBelowBigSur() and isAppleSilicon():
-        when declared(embeddedProxyExeArm): # embeddedProxyExeArm doesn't exist means choosenim was compiled on machine that doesn't support arm64
+        when declared(embeddedProxyExeArm):
           display("Debug:", "Using arm64 proxy", Warning, DebugPriority)
           return embeddedProxyExeArm
-        display("Warning:", "Since choosenim is compiled on macOS that doesn't support arm64, choosenim proxies won't be able to install arm64 proxies.", Warning, DebugPriority)
+        # embeddedProxyExeArm doesn't exist means choosenim was compiled on machine with macOS version below BigSur
+        display("Warning:", "Since choosenim is compiled on macOS version below BigSur, choosenim won't be able to install arm64 proxies.", Warning, DebugPriority)
   # normal linux, windows build ( the same as macos amd64 )
   display("Debug:", "Using x86_64 proxy", Warning, DebugPriority)
   return embeddedProxyExe
