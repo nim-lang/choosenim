@@ -52,7 +52,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: iffy/install-nim@v5.0.6
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build binary
         run: |
           nimble install -y
@@ -78,7 +80,9 @@ jobs:
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v4
-      - uses: iffy/install-nim@v5.0.6
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build binary
         run: |
           git config --global --add safe.directory /__w/choosenim/choosenim
