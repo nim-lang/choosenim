@@ -43,8 +43,29 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-linux
+          asset_name: choosenim-$tag_linux_amd64
           file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
+
+  build-win32-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build binary
+        run: |
+          nimble install -y
+          nimble build
+          dir bin/*
+      - name: Upload binaries to release/tag
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          overwrite: true
+          tag: ${{ github.ref }}
+          asset_name: choosenim-$tag_windows_amd64.exe
+          file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
 
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
@@ -71,7 +92,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-windows.zip
+          asset_name: choosenim-$tag_windows_amd64.zip
           file: ${{ runner.workspace }}/choosenim/choosenim-windows.zip
 
   # ----------------------------------------------------------------------------
@@ -95,7 +116,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-macos
+          asset_name: choosenim-$tag_macosx_amd64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
 
   build-macos_arm64:
@@ -117,5 +138,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-macos_arm64
+          asset_name: choosenim-$tag_macosx_arm64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
