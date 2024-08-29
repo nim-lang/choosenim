@@ -41,7 +41,9 @@ jobs:
       - name: Testing binaries
         run: |
           ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim stable
+          nim -v
           ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim devel
+          nim -v
 
 
   # ----------------------------------------------------------------------------
@@ -82,7 +84,9 @@ jobs:
       - name: Testing binaries
         run: |
           ${{ runner.workspace }}/choosenim/bin/choosenim stable
+          nim -v
           ${{ runner.workspace }}/choosenim/bin/choosenim devel
+          nim -v
 
   build-macos_arm64:
     runs-on: macos-14
@@ -100,4 +104,6 @@ jobs:
       - name: Testing binaries
         run: |
           ${{ runner.workspace }}/choosenim/bin/choosenim stable
+          nim -v
           ${{ runner.workspace }}/choosenim/bin/choosenim devel
+          nim -v
