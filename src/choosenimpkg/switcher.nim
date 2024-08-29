@@ -3,7 +3,10 @@ import os, strutils, osproc, pegs
 import nimblepkg/[cli, version, options]
 from nimblepkg/tools import getNameVersionChecksum
 
-import cliparams, common, utils
+import cliparams, common
+
+when not defined(windows):
+  import utils
 
 when defined(windows):
   import env
