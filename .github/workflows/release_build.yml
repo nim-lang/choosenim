@@ -43,7 +43,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-$tag_linux_amd64
+          asset_name: choosenim-${tag#v}_linux_amd64
           file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
 
   build-win32-exe:
@@ -64,7 +64,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-$tag_windows_amd64.exe
+          asset_name: choosenim-${tag#v}_windows_amd64.exe
           file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
 
   # ----------------------------------------------------------------------------
@@ -92,7 +92,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-$tag_windows_amd64.zip
+          asset_name: choosenim-${tag#v}_windows_amd64.zip
           file: ${{ runner.workspace }}/choosenim/choosenim-windows.zip
 
   # ----------------------------------------------------------------------------
@@ -116,7 +116,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-$tag_macosx_amd64
+          asset_name: choosenim-${tag#v}_macosx_amd64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
 
   build-macos_arm64:
@@ -138,5 +138,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-$tag_macosx_arm64
+          asset_name: choosenim-${tag#v}_macosx_arm64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
