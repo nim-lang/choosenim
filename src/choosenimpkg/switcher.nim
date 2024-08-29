@@ -55,9 +55,12 @@ proc isMacOSBelowBigSur(): bool =
   return twoVersion < 11
 
 proc isAppleSilicon(): bool =
-  let (output, exitCode) = execCmdEx("uname -m")  # arch -x86_64 uname -m returns x86_64 on M1
-  assert exitCode == 0, output
-  return output.strip() == "arm64" or isRosetta()
+  when not defined(macosx):
+    return false
+  else:
+    let (output, exitCode) = execCmdEx("uname -m")  # arch -x86_64 uname -m returns x86_64 on M1
+    assert exitCode == 0, output
+    return output.strip() == "arm64" or isRosetta()
 
 static:
   when defined(macosx):
