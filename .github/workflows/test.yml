@@ -1,0 +1,103 @@
+# This workflow will automatically upload a binary artifact when a release/tag  is created
+name: Testing
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+on:
+  # allow to build manually
+  workflow_dispatch:
+  # build automatically when pushing a tag
+  push:
+    branches:
+      - "master"
+    tags:
+      - "v*"
+  pull_request:
+
+jobs:
+  # ----------------------------------------------------------------------------
+  # this will checkout and build nim stable from gh repository on manylinux2014 / CentOS 7
+  build-linux:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: "choosenim"
+      - name: Build binary
+        run: |
+          STABLE_NIM=`curl -sSL https://nim-lang.org/channels/stable | xargs`
+          curl -O https://nim-lang.org/download/nim-$STABLE_NIM-linux_x64.tar.xz
+          tar -xvJf nim-$STABLE_NIM-linux_x64.tar.xz
+          NIMPATH=`pwd`/nim-$STABLE_NIM/bin
+          PATH=$PATH:$NIMPATH
+          # compile choosenim
+          ls -lah
+          cd choosenim
+          nimble install -y
+          nimble build --path:$NIMPATH
+          ls bin/*
+      - name: Testing binaries
+        run: |
+          ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim stable
+          ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim devel
+
+
+  # ----------------------------------------------------------------------------
+  # this uses choosenim by itself - you may need to build manually if you break choosenim
+  build-win32:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build binary
+        run: |
+          nimble install -y
+          nimble build
+          dir bin/*
+          mkdir zipfile
+          mkdir zipfile/choosenim
+          cp bin/choosenim.exe zipfile/choosenim/
+          cp scripts/runme.bat zipfile/
+          Compress-Archive -Path zipfile/* -Destination choosenim-windows.zip
+          
+  # ----------------------------------------------------------------------------
+  # this uses choosenim by itself - you may need to build manually if you break choosenim
+  build-macos:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build binary
+        run: |
+          git config --global --add safe.directory /__w/choosenim/choosenim
+          nimble install -y
+          nimble build
+          ls bin/*
+      - name: Testing binaries
+        run: |
+          ${{ runner.workspace }}/choosenim/bin/choosenim stable
+          ${{ runner.workspace }}/choosenim/bin/choosenim devel
+
+  build-macos_arm64:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build binary
+        run: |
+          git config --global --add safe.directory /__w/choosenim/choosenim
+          nimble install -y
+          nimble build
+          ls bin/*
+      - name: Testing binaries
+        run: |
+          ${{ runner.workspace }}/choosenim/bin/choosenim stable
+          ${{ runner.workspace }}/choosenim/bin/choosenim devel
