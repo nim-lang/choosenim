@@ -50,7 +50,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ env.VERSION }}
-          asset_name: choosenim-${tag}_linux_amd64
+          asset_name: choosenim-$tag_linux_amd64
           file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
 
   build-win32-exe:
@@ -65,14 +65,18 @@ jobs:
           nimble install -y
           nimble build
           dir bin/*
+
+      - name: Write release version
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
           
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{github.ref}}#v 
-          asset_name: choosenim-${tag}_windows_amd64.exe
+          tag: ${{ env.VERSION }}
+          asset_name: choosenim-$tag_windows_amd64.exe
           file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
 
   # ----------------------------------------------------------------------------
@@ -95,13 +99,17 @@ jobs:
           cp scripts/runme.bat zipfile/
           Compress-Archive -Path zipfile/* -Destination choosenim-windows.zip
 
+      - name: Write release version
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{github.ref}}#v
-          asset_name: choosenim-${tag}_windows_amd64.zip
+          tag: ${{ env.VERSION }}
+          asset_name: choosenim-$tag_windows_amd64.zip
           file: ${{ runner.workspace }}/choosenim/choosenim-windows.zip
 
   # ----------------------------------------------------------------------------
@@ -132,7 +140,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ env.VERSION }}
-          asset_name: choosenim-${tag}_macosx_amd64
+          asset_name: choosenim-$tag_macosx_amd64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
 
   build-macos_arm64:
@@ -161,5 +169,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ env.VERSION }}
-          asset_name: choosenim-${tag}_macosx_arm64
+          asset_name: choosenim-$tag_macosx_arm64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
