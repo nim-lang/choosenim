@@ -70,14 +70,14 @@ jobs:
         run: |
           $VERSION = $Env:GITHUB_REF_NAME.Trim("v")
           echo $VERSION
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          "VERSION=$VERSION" >> $env:GITHUB_ENV
           
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ VERSION }}
+          tag: ${{ env.VERSION }}
           asset_name: choosenim-$tag_windows_amd64.exe
           file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
 
@@ -106,14 +106,14 @@ jobs:
         run: |
           $VERSION = $Env:GITHUB_REF_NAME.Trim("v")
           echo $VERSION
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          "VERSION=$VERSION" >> $env:GITHUB_ENV
 
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ VERSION }}
+          tag: ${{ env.VERSION }}
           asset_name: choosenim-$tag_windows_amd64.zip
           file: ${{ runner.workspace }}/choosenim/choosenim-windows.zip
 
