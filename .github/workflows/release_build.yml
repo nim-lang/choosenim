@@ -49,8 +49,8 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ env.VERSION }}
-          asset_name: choosenim-$tag_linux_amd64
+          tag: ${{ github.ref }}
+          asset_name: choosenim-${{ env.VERSION }}_linux_amd64
           file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
 
   build-win32-exe:
@@ -77,8 +77,8 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ env.VERSION }}
-          asset_name: choosenim-$tag_windows_amd64.exe
+          tag: ${{ github.ref }}
+          asset_name: choosenim-${{ env.VERSION }}_windows_amd64.exe
           file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
 
   # ----------------------------------------------------------------------------
@@ -113,8 +113,8 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ env.VERSION }}
-          asset_name: choosenim-$tag_windows_amd64.zip
+          tag: ${{ github.ref }}
+          asset_name: choosenim-${{ env.VERSION }}_windows_amd64.zip
           file: ${{ runner.workspace }}/choosenim/choosenim-windows.zip
 
   # ----------------------------------------------------------------------------
@@ -144,8 +144,8 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ env.VERSION }}
-          asset_name: choosenim-$tag_macosx_amd64
+          tag: ${{ github.ref }}
+          asset_name: choosenim-${{ env.VERSION }}_macosx_amd64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
 
   build-macos_arm64:
@@ -173,6 +173,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ env.VERSION }}
-          asset_name: choosenim-$tag_macosx_arm64
+          tag: ${{ github.ref }}
+          asset_name: choosenim-${{ env.VERSION }}_macosx_arm64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
