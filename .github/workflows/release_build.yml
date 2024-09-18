@@ -47,7 +47,7 @@ jobs:
           file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
 
   build-win32-exe:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v4
       - uses: jiro4989/setup-nim-action@v2
