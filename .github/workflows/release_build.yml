@@ -90,6 +90,15 @@ jobs:
       - uses: jiro4989/setup-nim-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check release version
+        run: |
+          $VERSION = $Env:GITHUB_REF_NAME.Trim("v")
+          echo $Env:GITHUB_REF_NAME
+          echo $VERSION
+          echo $Env:GITHUB_REF
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
       - name: Build binary
         run: |
           nimble install -y
