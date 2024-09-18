@@ -49,7 +49,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ VERSION }}
+          tag: ${{ env.VERSION }}
           asset_name: choosenim-${tag}_linux_amd64
           file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
 
@@ -131,7 +131,7 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ VERSION }}
+          tag: ${{ env.VERSION }}
           asset_name: choosenim-${tag}_macosx_amd64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
 
@@ -160,6 +160,6 @@ jobs:
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
-          tag: ${{ VERSION }}
+          tag: ${{ env.VERSION }}
           asset_name: choosenim-${tag}_macosx_arm64
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
