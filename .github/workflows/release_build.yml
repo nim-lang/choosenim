@@ -68,7 +68,9 @@ jobs:
 
       - name: Write release version
         run: |
-          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+          $Version = ${GITHUB_REF_NAME}.Trim("v")
+          echo $Version
+          echo "VERSION=$Version" >> $GITHUB_ENV
           
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
@@ -101,7 +103,9 @@ jobs:
 
       - name: Write release version
         run: |
-          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+          $Version = ${GITHUB_REF_NAME}.Trim("v")
+          echo $Version
+          echo "VERSION=$Version" >> $GITHUB_ENV
 
       - name: Upload binaries to release/tag
         uses: svenstaro/upload-release-action@v2
