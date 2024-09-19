@@ -42,6 +42,7 @@ jobs:
           /home/runner/.nimble/bin/nim -v
           ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim devel
           /home/runner/.nimble/bin/nim -v
+          nimble test
 
 
   # ----------------------------------------------------------------------------
@@ -63,6 +64,9 @@ jobs:
           cp bin/choosenim.exe zipfile/choosenim/
           cp scripts/runme.bat zipfile/
           Compress-Archive -Path zipfile/* -Destination choosenim-windows.zip
+
+      - name: Testing binaries
+        run: nimble test
           
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
@@ -85,6 +89,7 @@ jobs:
           /Users/runner/.nimble/bin/nim -v
           ${{ runner.workspace }}/choosenim/bin/choosenim devel
           /Users/runner/.nimble/bin/nim -v
+          nimble test
 
   build-macos_arm64:
     runs-on: macos-14
@@ -103,5 +108,6 @@ jobs:
         run: |
           ${{ runner.workspace }}/choosenim/bin/choosenim stable
           /Users/runner/.nimble/bin/nim -v
+          nimble test
           ${{ runner.workspace }}/choosenim/bin/choosenim devel
           /Users/runner/.nimble/bin/nim -v
