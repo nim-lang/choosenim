@@ -35,7 +35,7 @@ jobs:
           ls -lah
           cd choosenim
           nimble install -y
-          nimble build --path:$NIMPATH
+          nimble build --path:$NIMPATH -d:release -d:staticBuild
           ls bin/*
 
       - name: Write release version
@@ -63,7 +63,7 @@ jobs:
       - name: Build binary
         run: |
           nimble install -y
-          nimble build
+          nimble build -d:release -d:staticBuild
           dir bin/*
 
       - name: Write release version
@@ -94,7 +94,7 @@ jobs:
       - name: Build binary
         run: |
           nimble install -y
-          nimble build
+          nimble build -d:release -d:staticBuild
           dir bin/*
           mkdir zipfile
           mkdir zipfile/choosenim
@@ -130,7 +130,7 @@ jobs:
         run: |
           git config --global --add safe.directory /__w/choosenim/choosenim
           nimble install -y
-          nimble build
+          nimble build -d:release -d:staticBuild
           ls bin/*
   
       - name: Write release version
@@ -159,7 +159,7 @@ jobs:
         run: |
           git config --global --add safe.directory /__w/choosenim/choosenim
           nimble install -y
-          nimble build
+          nimble build -d:release -d:staticBuild
           ls bin/*
 
       - name: Write release version
