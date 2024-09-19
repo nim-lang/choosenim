@@ -15,7 +15,7 @@ skipExt = @["nim"]
 
 requires "https://github.com/nim-lang/sat"
 requires "nim", "nimble#ed0b6ee"
-when defined(macosx):
+when not defined(windows):
   requires "libcurl >= 1.0.0"
 
 requires "osinfo"
