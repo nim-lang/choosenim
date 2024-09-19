@@ -21,20 +21,21 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install musl-tools
+          sudo apt-get install musl-dev
+
+      - uses: jiro4989/setup-nim-action@v2
         with:
-          path: "choosenim"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build binary
         run: |
-          STABLE_NIM=`curl -sSL https://nim-lang.org/channels/stable | xargs`
-          curl -O https://nim-lang.org/download/nim-$STABLE_NIM-linux_x64.tar.xz
-          tar -xvJf nim-$STABLE_NIM-linux_x64.tar.xz
-          NIMPATH=`pwd`/nim-$STABLE_NIM/bin
-          PATH=$PATH:$NIMPATH
-          # compile choosenim
-          ls -lah
-          cd choosenim
           nimble install -y
-          nimble build --path:$NIMPATH
+          nimble build -d:release -d:staticBuild
           ls bin/*
       - name: Testing binaries
         run: |
