@@ -2,11 +2,20 @@
 # ~/.nimble/bin/. It emulates a portable symlink with some nice additional
 # features.
 
-import strutils, os, osproc
+import strutils, os
 
-import nimblepkg/[cli, options, version]
+import nimblepkg/cli
 import nimblepkg/common as nimbleCommon
 import cliparams, common
+
+when defined(windows) or not defined(useExec):
+  import std/osproc
+  import nimblepkg/[options, version]
+
+when defined(windows):
+  import winlean
+else:
+  import posix
 
 proc getSelectedPath(params: CliParams): string =
   var path = ""
@@ -21,36 +30,45 @@ proc getSelectedPath(params: CliParams): string =
     let msg = "Unable to read $1. (Error was: $2)" % [path, exc.msg]
     raise newException(ChooseNimError, msg)
 
-proc getExePath(params: CliParams): string
+proc getExePath(params: CliParams): tuple[name, path: string]
   {.raises: [ChooseNimError, ValueError].} =
-  try:
-    let exe = getAppFilename().extractFilename
-    let exeName = exe.splitFile.name
+  let exe = getAppFilename().extractFilename
+  let exeName = exe.splitFile.name
+  result.name = exeName
 
+  try:
     if exeName in mingwProxies and defined(windows):
-      return getMingwBin(params) / exe
+      result.path = getMingwBin(params) / exe
     else:
-      return getSelectedPath(params) / "bin" / exe
+      result.path = getSelectedPath(params) / "bin" / exe
   except Exception as exc:
     let msg = "getAppFilename failed. (Error was: $1)" % exc.msg
     raise newException(ChooseNimError, msg)
 
 proc main(params: CliParams) {.raises: [ChooseNimError, ValueError].} =
-  let exePath = getExePath(params)
-  if not fileExists(exePath):
+  let exe = getExePath(params)
+  if not fileExists(exe.path):
     raise newException(ChooseNimError,
-        "Requested executable is missing. (Path: $1)" % exePath)
+        "Requested executable is missing. (Path: $1)" % exe.path)
 
-  try:
-    # Launch the desired process.
-    let p = startProcess(exePath, args=commandLineParams(),
-                         options={poParentStreams})
-    let exitCode = p.waitForExit()
-    p.close()
-    quit(exitCode)
-  except Exception as exc:
-    raise newException(ChooseNimError,
-        "Spawning of process failed. (Error was: $1)" % exc.msg)
+  # Launch the desired process.
+  when defined(useExec) and defined(posix):
+    let c_params = allocCStringArray(@[exe.name] & commandLineParams())
+    let res = execv(exe.path.cstring, c_params)
+    deallocCStringArray(c_params)
+    if res == -1:
+      raise newException(ChooseNimError,
+          "Exec of process $1 failed." % exe.path)
+  else:
+    try:
+      let p = startProcess(exe.path, args=commandLineParams(),
+                           options={poParentStreams})
+      let exitCode = p.waitForExit()
+      p.close()
+      quit(exitCode)
+    except Exception as exc:
+      raise newException(ChooseNimError,
+          "Spawning of process failed. (Error was: $1)" % exc.msg)
 
 when isMainModule:
   var error = ""
