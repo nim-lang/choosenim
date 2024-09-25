@@ -2,20 +2,32 @@
 # ~/.nimble/bin/. It emulates a portable symlink with some nice additional
 # features.
 
-import strutils, os
+import std/[os, strutils]
 
 import nimblepkg/cli
 import nimblepkg/common as nimbleCommon
 import cliparams, common
 
-when defined(windows) or not defined(useExec):
+when not (defined(windows) or defined(posix)) or not defined(useExec):
   import std/osproc
-  import nimblepkg/[options, version]
 
-when defined(windows):
-  import winlean
-else:
-  import posix
+when defined(posix):
+  import std/posix
+
+
+when defined(useExec) and defined(windows):
+    proc msvcrt_execv(path: cstring, params: cstringArray): int64 {.importc: "_execv", header: "<process.h>", sideEffect.}
+
+proc exec*(path: string, params: seq[string]): int {.discardable.} =
+    var c_params = allocCStringArray(params)
+    defer: deallocCStringArray(c_params)
+
+    when defined(posix):
+        result = execv(path.cstring, c_params)
+    elif defined(windows):
+        result = msvcrt_execv(path.cstring, c_params).int
+    else:
+        raise newException(OSError, "OS does not support execv/_execv.")
 
 proc getSelectedPath(params: CliParams): string =
   var path = ""
@@ -52,13 +64,10 @@ proc main(params: CliParams) {.raises: [ChooseNimError, ValueError].} =
         "Requested executable is missing. (Path: $1)" % exe.path)
 
   # Launch the desired process.
-  when defined(useExec) and defined(posix):
-    let c_params = allocCStringArray(@[exe.name] & commandLineParams())
-    let res = execv(exe.path.cstring, c_params)
-    deallocCStringArray(c_params)
+  when defined(useExec) and (defined(posix) or defined(windows)):
+    let res = exec(exe.path, @[exe.name] & commandLineParams())
     if res == -1:
-      raise newException(ChooseNimError,
-          "Exec of process $1 failed." % exe.path)
+      raise newException(ChooseNimError, "Exec of process $1 failed." % exe.path)
   else:
     try:
       let p = startProcess(exe.path, args=commandLineParams(),
