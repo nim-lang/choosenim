@@ -21,27 +21,23 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v4
+
+      - uses: jiro4989/setup-nim-action@v2
         with:
-          path: "choosenim"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build binary
         run: |
-          STABLE_NIM=`curl -sSL https://nim-lang.org/channels/stable | xargs`
-          curl -O https://nim-lang.org/download/nim-$STABLE_NIM-linux_x64.tar.xz
-          tar -xvJf nim-$STABLE_NIM-linux_x64.tar.xz
-          NIMPATH=`pwd`/nim-$STABLE_NIM/bin
-          PATH=$PATH:$NIMPATH
-          # compile choosenim
-          ls -lah
-          cd choosenim
           nimble install -y
-          nimble build --path:$NIMPATH
+          nimble build -d:release
           ls bin/*
       - name: Testing binaries
         run: |
-          ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim stable
+          ${{ runner.workspace }}/choosenim/bin/choosenim stable
           /home/runner/.nimble/bin/nim -v
-          ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim devel
+          ${{ runner.workspace }}/choosenim/bin/choosenim devel
           /home/runner/.nimble/bin/nim -v
+          nimble test
 
 
   # ----------------------------------------------------------------------------
@@ -63,6 +59,9 @@ jobs:
           cp bin/choosenim.exe zipfile/choosenim/
           cp scripts/runme.bat zipfile/
           Compress-Archive -Path zipfile/* -Destination choosenim-windows.zip
+
+      - name: Testing binaries
+        run: nimble test
           
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
@@ -77,7 +76,7 @@ jobs:
         run: |
           git config --global --add safe.directory /__w/choosenim/choosenim
           nimble install -y
-          nimble build
+          nimble build -d:staticBuild
           ls bin/*
       - name: Testing binaries
         run: |
@@ -85,6 +84,7 @@ jobs:
           /Users/runner/.nimble/bin/nim -v
           ${{ runner.workspace }}/choosenim/bin/choosenim devel
           /Users/runner/.nimble/bin/nim -v
+          nimble test
 
   build-macos_arm64:
     runs-on: macos-14
@@ -97,11 +97,12 @@ jobs:
         run: |
           git config --global --add safe.directory /__w/choosenim/choosenim
           nimble install -y
-          nimble build
+          nimble build -d:staticBuild
           ls bin/*
       - name: Testing binaries
         run: |
           ${{ runner.workspace }}/choosenim/bin/choosenim stable
           /Users/runner/.nimble/bin/nim -v
+          nimble test
           ${{ runner.workspace }}/choosenim/bin/choosenim devel
           /Users/runner/.nimble/bin/nim -v
