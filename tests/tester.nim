@@ -139,7 +139,7 @@ test "fails on bad flag":
   check inLines(output.processOutput, "unknown")
   check inLines(output.processOutput, "flag")
 
-when not (defined(macos) and defined(arm64)):
+when not defined(macos):
   test "can choose #v1.0.0":
     beginTest()
     block:
