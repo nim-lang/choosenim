@@ -63,7 +63,7 @@ jobs:
       - name: Build binary
         run: |
           nimble install -y
-          nimble build -d:release -d:staticBuild
+          nimble build -d:release
           dir bin/*
 
       - name: Write release version
@@ -94,12 +94,15 @@ jobs:
       - name: Build binary
         run: |
           nimble install -y
-          nimble build -d:release -d:staticBuild
+          nimble build -d:release
           dir bin/*
           mkdir zipfile
           mkdir zipfile/choosenim
           cp bin/choosenim.exe zipfile/choosenim/
           cp scripts/runme.bat zipfile/
+          Invoke-WebRequest -Uri https://nim-lang.org/download/dlls.zip -OutFile dlls.zip
+          Expand-Archive -Force dlls.zip windlls
+          cp windlls/* zipfile/choosenim/
           Compress-Archive -Path zipfile/* -Destination choosenim-windows.zip
 
       - name: Write release version
