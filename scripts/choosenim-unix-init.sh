@@ -44,7 +44,7 @@ install() {
       ;;
     *windows_amd64* )
       # Download ZIP for Windows
-      local ext=".exe"
+      local ext=".zip"
       local filename="$filename$ext"
       local url="$url$ext"
       ;;
