@@ -53,33 +53,6 @@ jobs:
           asset_name: choosenim-${{ env.VERSION }}_linux_amd64
           file: ${{ runner.workspace }}/choosenim/choosenim/bin/choosenim
 
-  build-win32-exe:
-    runs-on: windows-2019
-    steps:
-      - uses: actions/checkout@v4
-      - uses: jiro4989/setup-nim-action@v2
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build binary
-        run: |
-          nimble install -y
-          nimble build -d:release
-          dir bin/*
-
-      - name: Write release version
-        run: |
-          $VERSION = $Env:GITHUB_REF_NAME.Trim("v")
-          echo $VERSION
-          "VERSION=$VERSION" >> $env:GITHUB_ENV
-          
-      - name: Upload binaries to release/tag
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          overwrite: true
-          tag: ${{ github.ref }}
-          asset_name: choosenim-${{ env.VERSION }}_windows_amd64.exe
-          file: ${{ runner.workspace }}/choosenim/bin/choosenim.exe
 
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
