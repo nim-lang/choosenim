@@ -25,11 +25,12 @@ jobs:
       - uses: jiro4989/setup-nim-action@v2
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+          nim-version: devel
 
       - name: Build binary
         run: |
           nimble install -y
-          nimble build -d:release
+          nimble build -d:release -d:staticBuild
           ls bin/*
       - name: Testing binaries
         run: |
@@ -66,7 +67,7 @@ jobs:
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
   build-macos:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
       - uses: jiro4989/setup-nim-action@v2
