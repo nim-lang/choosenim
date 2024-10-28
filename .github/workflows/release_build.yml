@@ -177,5 +177,5 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           overwrite: true
           tag: ${{ github.ref }}
-          asset_name: choosenim-${{ env.VERSION }}_macosx_arm64
+          asset_name: choosenim-${{ env.VERSION }}_macosx_arm
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
