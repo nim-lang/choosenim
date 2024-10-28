@@ -18,4 +18,4 @@ jobs:
       - name: choosenim
         run: |
           curl https://raw.githubusercontent.com/nim-lang/choosenim/refs/heads/master/scripts/choosenim-unix-init.sh -o init.sh
-          sh init.sh
+          sh init.sh -y
