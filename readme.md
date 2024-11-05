@@ -61,11 +61,10 @@ prompts and enjoy your new Nim and choosenim installation.
 
 ----
 
-There was also a third-party project to provide an installer for choosenim,
-you can find it [here](https://gitlab.com/ArMour85/choosenim-setup) (note that
-this isn't vetted by the Nim team so you do so at your own risk). This project
-did however target the old repository for Choosenim, so it doesn't work with
-this repository without modification.
+There is also a third-party project to provide an installer for choosenim on
+Windows and a [Chocolatey package](https://community.chocolatey.org/packages/choosenim),
+you can find it [here](https://gitlab.com/EchoPouet/choosenim-setup) (note that
+this isn't vetted by the Nim team so use these install methods at your own risk).
 
 ### Unix
 

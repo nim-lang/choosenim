@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.8.8"
+version       = "0.8.9"
 author        = "Dominik Picheta"
 description   = "The Nim toolchain installer."
 license       = "BSD"
