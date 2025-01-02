@@ -123,7 +123,7 @@ proc areProxiesInstalled(params: CliParams, proxies: openarray[string]): bool =
 
 proc isDefaultCCInPath*(params: CliParams): bool =
   # Fixes issue #104
-  when defined(macosx):
+  when defined(macosx) or defined(freebsd):
     return findExe("clang") != ""
   else:
     return findExe("gcc") != ""
