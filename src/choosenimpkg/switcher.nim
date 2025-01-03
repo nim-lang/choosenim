@@ -232,6 +232,31 @@ proc writeProxy(bin: string, params: CliParams) =
     display("Hint:", "Ensure that '$1' is before '$2' in the PATH env var." %
             [params.getBinDir(), fromPATH.splitFile.dir], Warning, HighPriority)
 
+proc installProxies*(params: CliParams): bool =
+  ## Install or update proxy executables.
+  ##
+  ## Returns `true` when any proxies were newly installed or updated,
+  ## `false` otherwise.
+  var proxiesToInstall = @proxies
+
+  # Handle MingW proxies.
+  when defined(windows):
+    if not isDefaultCCInPath(params):
+      let mingwBin = getMingwBin(params)
+      if not fileExists(mingwBin / "gcc".addFileExt(ExeExt)):
+        let msg = "No 'gcc' binary found in '$1'." % mingwBin
+        raise newException(ChooseNimError, msg)
+
+      proxiesToInstall.add(mingwProxies)
+
+  if not params.areProxiesInstalled(proxiesToInstall):
+    # Create the proxy executables.
+    for proxy in proxiesToInstall:
+      writeProxy(proxy, params)
+    return true
+
+  return false
+
 proc switchToPath(filepath: string, params: CliParams): bool =
   ## Switches to the specified file path that should point to the root of
   ## the Nim repo.
@@ -254,29 +279,14 @@ proc switchToPath(filepath: string, params: CliParams): bool =
                      "running `choosenim \"#v0.16.0\"` or similar.",
             Warning, HighPriority)
 
-  var proxiesToInstall = @proxies
-  # Handle MingW proxies.
-  when defined(windows):
-    if not isDefaultCCInPath(params):
-      let mingwBin = getMingwBin(params)
-      if not fileExists(mingwBin / "gcc".addFileExt(ExeExt)):
-        let msg = "No 'gcc' binary found in '$1'." % mingwBin
-        raise newException(ChooseNimError, msg)
-
-      proxiesToInstall.add(mingwProxies)
-
   # Return early if this version is already selected.
   let selectedPath = params.getSelectedPath()
-  let proxiesInstalled = params.areProxiesInstalled(proxiesToInstall)
-  if selectedPath == filepath and proxiesInstalled:
+
+  if selectedPath == filepath and not installProxies(params):
     return false
   else:
     # Write selected path to "current file".
     writeFile(params.getCurrentFile(), filepath)
-
-  # Create the proxy executables.
-  for proxy in proxiesToInstall:
-    writeProxy(proxy, params)
 
   when defined(windows):
     if not isNimbleBinInPath(params):
