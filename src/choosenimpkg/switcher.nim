@@ -54,7 +54,7 @@ proc isMacOSBelowBigSur(): bool =
 
   return twoVersion < 11
 
-proc isAppleSilicon(): bool =
+proc isAppleSilicon*(): bool =
   when not defined(macosx):
     return false
   else:
