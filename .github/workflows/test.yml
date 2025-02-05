@@ -66,7 +66,7 @@ jobs:
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
   build-macos:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
       - uses: jiro4989/setup-nim-action@v2
@@ -87,7 +87,7 @@ jobs:
           nimble test
 
   build-macos_arm64:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: jiro4989/setup-nim-action@v2
