@@ -198,7 +198,8 @@ proc getNightliesUrl*(parsedContents: JsonNode, arch: int): (string, string) =
             if "x" & $arch in aname:
               result = (url, tagName)
           else:
-            result = (url, tagName)
+            if $hostCPU in aname:
+              result = (url, tagName)
         if result[0].len != 0:
           break
     if result[0].len != 0:
