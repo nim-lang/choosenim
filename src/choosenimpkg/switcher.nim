@@ -1,4 +1,4 @@
-import os, strutils, osproc, pegs
+import std/[os, strutils, osproc, pegs, json]
 
 import nimblepkg/[cli, version, options]
 from nimblepkg/tools import getNameVersionChecksum
