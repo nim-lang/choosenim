@@ -180,27 +180,3 @@ proc getLatestCommit*(repo, branch: string): string =
         break
     else:
       display("Warning", outp & "\ngit ls-remote failed", Warning, HighPriority)
-
-proc getNightliesUrl*(parsedContents: JsonNode, arch: int): (string, string) =
-  let os =
-    when defined(windows): "windows"
-    elif defined(linux): "linux"
-    elif defined(macosx): "osx"
-    elif defined(freebsd): "freebsd"
-  for jn in parsedContents.getElems():
-    if jn["name"].getStr().contains("devel"):
-      let tagName = jn{"tag_name"}.getStr("")
-      for asset in jn["assets"].getElems():
-        let aname = asset["name"].getStr()
-        let url = asset{"browser_download_url"}.getStr("")
-        if os in aname:
-          when not defined(macosx):
-            if "x" & $arch in aname:
-              result = (url, tagName)
-          else:
-            if $hostCPU in aname:
-              result = (url, tagName)
-        if result[0].len != 0:
-          break
-    if result[0].len != 0:
-      break
