@@ -198,10 +198,7 @@ proc getNightliesUrl*(parsedContents: JsonNode, arch: int): (string, string) =
             if "x" & $arch in aname:
               result = (url, tagName)
           else:
-            # when choosenim become arm64 binary, isRosetta will be false. But we don't have nightlies for arm64 yet.
-            # So, we should check if choosenim is compiled as x86_64 (nim's system.hostCPU returns amd64 even on Apple Silicon machines)
-            if not isRosetta() and hostCPU == "amd64":
-              result = (url, tagName)
+            result = (url, tagName)
         if result[0].len != 0:
           break
     if result[0].len != 0:
