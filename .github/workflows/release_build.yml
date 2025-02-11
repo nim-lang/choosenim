@@ -179,3 +179,32 @@ jobs:
           tag: ${{ github.ref }}
           asset_name: choosenim-${{ env.VERSION }}_macosx_arm
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
+
+  build-linux_arm64:
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build binary
+        run: |
+          git config --global --add safe.directory /__w/choosenim/choosenim
+          nimble install -y
+          nimble build -d:release -d:staticBuild
+          ls bin/*
+
+      - name: Write release version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      
+      - name: Upload binaries to release/tag
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          overwrite: true
+          tag: ${{ github.ref }}
+          asset_name: choosenim-${{ env.VERSION }}_linux_arm64
+          file: ${{ runner.workspace }}/choosenim/bin/choosenim
