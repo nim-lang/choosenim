@@ -48,7 +48,7 @@ jobs:
         run: |
           STABLE_NIM=`curl -sSL https://nim-lang.org/channels/stable | xargs`
           curl -O https://github.com/nim-lang/nightlies/releases/download/latest-devel/linux_armv7l.tar.xz
-          tar -xvJf linux_armv7l.tar.xz
+          tar -xvJf ./linux_armv7l.tar.xz
           NIMPATH=`pwd`/linux_armv7l/bin
           PATH=$PATH:$NIMPATH
           # compile choosenim
