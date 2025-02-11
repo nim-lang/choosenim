@@ -181,7 +181,7 @@ jobs:
           file: ${{ runner.workspace }}/choosenim/bin/choosenim
 
   build-linux_arm64:
-    runs-on: [runs-on, runner=2cpu-linux-arm64, "run-id=${{ github.run_id }}"]
+    runs-on: ubuntu-22.04-arm
     steps:
       - uses: actions/checkout@v4
       - uses: jiro4989/setup-nim-action@v2
