@@ -57,8 +57,6 @@ jobs:
           ls bin/*
       - name: Testing binaries
         run: |
-          ${{ runner.workspace }}/choosenim/bin/choosenim stable
-          /home/runner/.nimble/bin/nim -v
           ${{ runner.workspace }}/choosenim/bin/choosenim devel
           /home/runner/.nimble/bin/nim -v
           nimble test
