@@ -52,8 +52,6 @@ jobs:
       - name: Build binary
         run: |
           # compile choosenim
-          ls -lah
-          cd choosenim
           nimble install -y
           nimble build -d:release
           ls bin/*
