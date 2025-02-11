@@ -1,4 +1,4 @@
-import os, strutils, osproc, pegs
+import std/[os, strutils, osproc, pegs, json]
 
 import nimblepkg/[cli, version, options]
 from nimblepkg/tools import getNameVersionChecksum
@@ -54,7 +54,7 @@ proc isMacOSBelowBigSur(): bool =
 
   return twoVersion < 11
 
-proc isAppleSilicon(): bool =
+proc isAppleSilicon*(): bool =
   when not defined(macosx):
     return false
   else:
@@ -123,7 +123,7 @@ proc areProxiesInstalled(params: CliParams, proxies: openarray[string]): bool =
 
 proc isDefaultCCInPath*(params: CliParams): bool =
   # Fixes issue #104
-  when defined(macosx):
+  when defined(macosx) or defined(freebsd):
     return findExe("clang") != ""
   else:
     return findExe("gcc") != ""
