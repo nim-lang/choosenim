@@ -44,18 +44,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: devel
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build binary
         run: |
-          STABLE_NIM=`curl -sSL https://nim-lang.org/channels/stable | xargs`
-          curl -O https://github.com/nim-lang/nightlies/releases/download/latest-devel/linux_armv7l.tar.xz
-          tar -xvJf ./linux_armv7l.tar.xz
-          NIMPATH=`pwd`/linux_armv7l/bin
-          PATH=$PATH:$NIMPATH
           # compile choosenim
           ls -lah
           cd choosenim
           nimble install -y
-          nimble build --path:$NIMPATH -d:release
+          nimble build -d:release
           ls bin/*
       - name: Testing binaries
         run: |
