@@ -14,20 +14,20 @@ when not (defined(windows) or defined(posix)) or not defined(useExec):
 when defined(posix):
   import std/posix
 
+when defined(useExec):
+  when defined(windows):
+    proc msvcrt_execv(path: cstring, params: cstringArray): int64 {.importc: "_execv", header: "<process.h>", sideEffect.}
 
-when defined(useExec) and defined(windows):
-  proc msvcrt_execv(path: cstring, params: cstringArray): int64 {.importc: "_execv", header: "<process.h>", sideEffect.}
+  proc exec*(path: string, params: seq[string]): int {.discardable.} =
+    var c_params = allocCStringArray(params)
+    defer: deallocCStringArray(c_params)
 
-proc exec*(path: string, params: seq[string]): int {.discardable.} =
-  var c_params = allocCStringArray(params)
-  defer: deallocCStringArray(c_params)
-
-  when defined(posix):
-    result = execv(path.cstring, c_params)
-  elif defined(windows):
-    result = msvcrt_execv(path.cstring, c_params).int
-  else:
-    raise newException(OSError, "OS does not support execv/_execv.")
+    when defined(posix):
+      result = execv(path.cstring, c_params)
+    elif defined(windows):
+      result = msvcrt_execv(path.cstring, c_params).int
+    else:
+      raise newException(OSError, "OS does not support execv/_execv.")
 
 proc getSelectedPath*(params: CliParams): string
   {.raises: [ChooseNimError, ValueError].} =
