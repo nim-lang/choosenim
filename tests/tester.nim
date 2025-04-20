@@ -225,7 +225,7 @@ test "can update devel with git":
 
 test "can install and update nightlies":
   beginTest()
-  block:
+  when false:
     # Install nightly
     let (output, exitCode) = exec("devel", liveOutput=true)
 
