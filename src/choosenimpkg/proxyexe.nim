@@ -16,7 +16,7 @@ when defined(posix):
 
 when defined(useExec):
   when defined(windows):
-    proc msvcrt_execv(path: cstring, params: cstringArray): int64 {.importc: "_execv", header: "<process.h>", sideEffect.}
+    proc msvcrt_execv(path: cstring, params: cstringArray): int64 {.importc: "_execv", sideEffect.}
 
   proc exec*(path: string, params: seq[string]): int {.discardable.} =
     var c_params = allocCStringArray(params)
