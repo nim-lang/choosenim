@@ -1,6 +1,7 @@
 # Copyright (C) Dominik Picheta. All rights reserved.
 # BSD-3-Clause License. Look at license.txt for more info.
-import std/[os, strutils, algorithm]
+
+import std/[algorithm, os, strutils]
 
 import nimblepkg/[cli, version]
 import nimblepkg/common as nimbleCommon
@@ -12,8 +13,6 @@ import choosenimpkg/[utils, channel]
 
 when defined(windows):
   import choosenimpkg/env
-
-  import times
 
 proc installVersion(version: Version, params: CliParams) =
   let

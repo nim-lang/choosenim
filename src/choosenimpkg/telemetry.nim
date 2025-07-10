@@ -1,7 +1,7 @@
 # Copyright (C) Dominik Picheta. All rights reserved.
 # BSD-3-Clause License. Look at license.txt for more info.
 
-import os, strutils, options, times, asyncdispatch
+import std/[asyncdispatch, options, os, strutils, times]
 
 # import analytics
 import nimblepkg/cli

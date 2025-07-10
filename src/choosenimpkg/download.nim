@@ -1,4 +1,4 @@
-import httpclient, strutils, os, osproc, terminal, times, json, uri
+import std/[httpclient, json, os, osproc, strutils, terminal, times, uri]
 
 when defined(curl):
   import math
@@ -7,8 +7,10 @@ import nimblepkg/[version, cli]
 when defined(curl):
   import libcurl except Version
 
-import cliparams, common, utils, switcher
+import cliparams, common, utils
 # import telemetry
+when defined(macosx):
+  from switcher import isAppleSilicon
 
 const
   githubTagReleasesUrl = "https://api.github.com/repos/nim-lang/Nim/tags"
