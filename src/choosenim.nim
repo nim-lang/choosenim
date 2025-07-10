@@ -1,6 +1,6 @@
 # Copyright (C) Dominik Picheta. All rights reserved.
 # BSD-3-Clause License. Look at license.txt for more info.
-import os, strutils, algorithm
+import std/[os, strutils, algorithm]
 
 import nimblepkg/[cli, version]
 import nimblepkg/common as nimbleCommon
@@ -94,11 +94,11 @@ proc chooseVersion(version: string, params: CliParams) =
       removeDir(tempDir)
       createDir(tempDir)
       extract(path, tempDir)
+      createDir(binDir)
       for kind, path in walkDir(tempDir, relative = true):
         if kind == pcFile:
           try:
-            if not fileExists(binDir / path) or
-              getLastModificationTime(binDir / path) < getLastModificationTime(tempDir / path):
+            if not fileExists(binDir / path) or fileNewer(tempDir / path, binDir / path):
               moveFile(tempDir / path, binDir / path)
               display("Info:", "Copied '$1' to '$2'" % [path, binDir], priority = HighPriority)
           except:
