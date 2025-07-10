@@ -1,11 +1,21 @@
 # Copyright (C) Dominik Picheta. All rights reserved.
 # BSD-3-Clause License. Look at license.txt for more info.
-import osproc, streams, unittest, strutils, os, sequtils, sugar, logging
+import std/[envvars, logging, os, osproc, sequtils, streams, strtabs, strutils, sugar, unittest]
 
-var rootDir = getCurrentDir()
-var exePath = rootDir / "bin" / addFileExt("choosenim", ExeExt)
-var nimbleDir = rootDir / "tests" / "nimbleDir"
-var choosenimDir = rootDir / "tests" / "choosenimDir"
+import choosenimpkg/[channel, cliparams]
+
+var
+  rootDir = getCurrentDir()
+  exePath = rootDir / "bin" / addFileExt("choosenim", ExeExt)
+  nimbleDir = rootDir / "tests" / "nimbleDir"
+  choosenimDir = rootDir / "tests" / "choosenimDir"
+  helloNim = rootDir / "tests" / "hello.nim"
+  helloBin = rootDir / "tests" / "hello".addFileExt(ExeExt)
+
+const helloSrc = """
+import std/cmdline
+echo "Hello, " & paramStr(1)
+"""
 
 template cd*(dir: string, body: untyped) =
   ## Sets the current dir to ``dir``, executes ``body`` and restores the
@@ -58,7 +68,7 @@ proc outputReader(stream: Stream, missedEscape: var bool): string =
     else:
       result.add(c[0])
 
-proc exec(args: varargs[string], exe=exePath,
+proc exec(args: varargs[string], exe=exePath, env: StringTableRef = nil,
           yes=true, liveOutput=false,
           global=false): tuple[output: string, exitCode: int] =
   var quotedArgs: seq[string] = @[exe]
@@ -77,10 +87,10 @@ proc exec(args: varargs[string], exe=exePath,
 
   echo "exec(): ", quotedArgs.join(" ")
   if not liveOutput:
-    result = execCmdEx(quotedArgs.join(" "))
+    result = execCmdEx(quotedArgs.join(" "), env=env)
   else:
     result.output = ""
-    let process = startProcess(quotedArgs.join(" "),
+    let process = startProcess(quotedArgs.join(" "), env=env,
                                options={poEvalCommand, poStdErrToStdOut})
     var missedEscape = false
     while true:
@@ -106,6 +116,26 @@ proc inLines(lines: seq[string], word: string): bool =
 proc hasLine(lines: seq[string], line: string): bool =
   for i in lines:
     if i.normalize.strip() == line.normalize(): return true
+
+proc removeGCCFromPath(value: string): string =
+  var paths: seq[string] = @[]
+  for path in value.split(PathSep):
+    if not fileExists(path / "gcc".addFileExt(ExeExt)):
+      paths.add(path)
+  return join(paths, $PathSep)
+
+proc prependToPath(value, dir: string): string =
+  var paths: seq[string] = @[dir]
+  for path in value.split(PathSep):
+    if path != dir:
+      paths.add(path)
+  return join(paths, $PathSep)
+
+proc getEnvTable(): StringTableRef =
+  result = newStringTable()
+  for (key, value) in envpairs():
+    result[key] = value
+
 
 test "can compile choosenim":
   var args = @["build"]
@@ -140,33 +170,111 @@ test "fails on bad flag":
   check inLines(output.processOutput, "flag")
 
 when defined(linux) or defined(windows):
+  test "installs stable version from binary dist":
+    removeDir(nimbleDir)
+    removeDir(choosenimDir)
+    removeFile(helloNim)
+    removeFile(helloBin)
+
+    var params: CliParams
+    let stableVersion = getChannelVersion("stable", params, live=true)
+
+    block:
+      var envt = getEnvTable()
+
+      when defined(windows):
+        # ensure that choosenim will download & install a binary MinGW distribution
+        envt["PATH"] = removeGCCFromPath(getEnv("PATH"))
+
+      var (output, exitCode) = exec("stable", liveOutput=true, env=envt)
+      check exitCode == QuitSuccess
+
+      check inLines(output.processOutput, "downloading nim " & stableVersion)
+      check inLines(output.processOutput, "already built")
+      check hasLine(output.processOutput, "switched to nim " & stableVersion)
+
+      when defined(windows):
+        check inLines(output.processOutput, "downloading c compiler")
+        check inLines(output.processOutput, "downloading dlls")
+
+      check dirExists(choosenimDir / "toolchains" / "nim-" & stableVersion)
+      check not dirExists(choosenimDir / "toolchains" / "nim" & stableVersion / "c_code")
+
+      when defined(windows):
+        check dirExists(choosenimDir / "toolchains" / "mingw" & $getCpuArch())
+
+      # check that we can call teh Nim compiler and it shows the correct version
+      (output, exitCode) = exec("-v", exe=nimbleDir / "bin" / "nim".addFileExt(ExeExt), yes=false)
+      echo output
+
+      check inLines(output.processOutput, "nim compiler version " & stableVersion)
+
+      when defined(linux):
+        check inLines(output.processOutput, "[linux")
+
+      when defined(windows):
+        check inLines(output.processOutput, "[windows")
+
+      # check that we can compile a basic hello world Nim file
+      block:
+        defer:
+          removeFile(helloNim)
+
+        echo "Creating: " & helloNim
+        writeFile(helloNim, helloSrc)
+
+        block:
+          defer:
+            removeFile(helloBin)
+
+          echo "Compiling: " & helloNim
+          envt["NIMBLE_DIR"] = nimbleDir
+          envt["CHOOSENIM_DIR"] = choosenimDir
+          envt["PATH"] = prependToPath(envt["PATH"], nimbleDir / "bin")
+
+          output = execProcess(
+            nimbleDir / "bin" / "nim".addFileExt(ExeExt),
+            args=["--skipUserCfg", "--skipParentCfg", "--skipProjCfg", "compile", helloNim],
+            env=envt,
+            options={poStdErrToStdOut}
+          )
+          echo "Compiler output:\n" & output
+          check fileExists(helloBin)
+
+          # check that we can execute the compiled binary and it gives the expected output
+          echo "Running: " & helloBin
+          output = execProcess(helloBin, args=["Nim"], options={poStdErrToStdOut})
+          echo "Output: " & output
+          check output.strip == "Hello, Nim"
+
+when defined(linux) or defined(windows):
   test "can choose #v1.0.0":
     beginTest()
     block:
       let (output, exitCode) = exec("\"#v1.0.0\"", liveOutput=true)
       check exitCode == QuitSuccess
-  
+
       check inLines(output.processOutput, "building")
       check inLines(output.processOutput, "downloading")
       check inLines(output.processOutput, "building tools")
       check hasLine(output.processOutput, "switched to nim #v1.0.0")
-  
+
     block:
       let (output, exitCode) = exec("\"#v1.0.0\"")
       check exitCode == QuitSuccess
-  
+
       check hasLine(output.processOutput, "info: version #v1.0.0 already selected")
-  
+
     # block:
     #   let (output, exitCode) = exec("--version", exe=nimbleDir / "bin" / "nimble")
     #   check exitCode == QuitSuccess
     #   check inLines(output.processOutput, "v0.11.0")
-  
+
     # Verify that we cannot remove currently selected #v1.0.0.
     block:
       let (output, exitCode) = exec(["remove", "\"#v1.0.0\""], liveOutput=true)
       check exitCode == QuitFailure
-  
+
       check inLines(output.processOutput, "Cannot remove current version.")
 
 test "cannot remove not installed v0.16.0":
@@ -176,19 +284,6 @@ test "cannot remove not installed v0.16.0":
     check exitCode == QuitFailure
 
     check inLines(output.processOutput, "Version 0.16.0 is not installed.")
-
-when defined(linux):
-  test "linux binary install":
-    beginTest()
-    block:
-      let (output, exitCode) = exec("1.0.0", liveOutput=true)
-      check exitCode == QuitSuccess
-
-      check inLines(output.processOutput, "downloading")
-      check inLines(output.processOutput, "already built")
-      check hasLine(output.processOutput, "switched to nim 1.0.0")
-
-      check not dirExists(choosenimDir / "toolchains" / "nim-1.0.0" / "c_code")
 
 test "can update devel with git":
   beginTest()
@@ -274,7 +369,7 @@ test "fails with invalid version":
     check exitCode == QuitFailure
     check inLines(output.processOutput, "Version")
     check inLines(output.processOutput, "does not exist")
-    
+
 test "can show general informations":
   beginTest()
   block:
