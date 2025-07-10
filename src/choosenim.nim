@@ -94,6 +94,7 @@ proc chooseVersion(version: string, params: CliParams) =
       removeDir(tempDir)
       createDir(tempDir)
       extract(path, tempDir)
+      createDir(binDir)
       for kind, path in walkDir(tempDir, relative = true):
         if kind == pcFile:
           try:
