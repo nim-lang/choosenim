@@ -97,9 +97,11 @@ proc addGithubAuthentication(url: string): string =
     return url.replace("https://api.github.com", "https://" & ghtoken & "@api.github.com")
 
 when defined(curl):
+  type CurlError* = object of CatchableError
+
   proc checkCurl(code: Code) =
     if code != E_OK:
-      raise newException(AssertionError, "CURL failed: " & $easy_strerror(code))
+      raise newException(CurlError, "CURL failed: " & $easy_strerror(code))
 
   proc downloadFileCurl(url, outputPath: string) =
     displayDebug("Downloading using Curl")
