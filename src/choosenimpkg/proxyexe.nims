@@ -5,3 +5,6 @@ when defined(staticBuild):
     switch("gcc.linkerexe", "musl-gcc")
   when not defined(OSX):
     switch("passL", "-static")
+
+when not defined(windows):
+  switch("define", "useExec")
