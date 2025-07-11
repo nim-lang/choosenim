@@ -93,5 +93,6 @@ suite "proxyexe":
       ]
     let outp = execProcess(proxyNimBin, args=args, options={poStdErrToStdOut})
 
-    # compare output with given test args and check that received arg[0] == "nim" (no extension!)
-    check outp.strip.splitLines == @[oid, "nim"] & args
+    # compare output with given test args and check that received arg[0] is
+    # path to proxied executable in toolchain bin dir
+    check outp.strip.splitLines == @[oid, mockNimBin] & args

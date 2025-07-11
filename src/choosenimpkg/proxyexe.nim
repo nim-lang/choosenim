@@ -66,7 +66,7 @@ proc main(params: CliParams) {.raises: [ChooseNimError, ValueError].} =
 
   # Launch the desired process.
   when defined(useExec) and (defined(posix) or defined(windows)):
-    let res = exec(exe.path, @[exe.name] & commandLineParams())
+    let res = exec(exe.path, @[exe.path] & commandLineParams())
     if res == -1:
       raise newException(ChooseNimError, "Exec of process $1 failed." % exe.path)
   else:
