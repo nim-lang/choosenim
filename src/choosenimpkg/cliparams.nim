@@ -1,4 +1,4 @@
-import parseopt, strutils, os
+import std/[os, parseopt, strutils]
 
 import nimblepkg/[cli, options, config]
 import nimblepkg/common as nimble_common

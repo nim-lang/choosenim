@@ -1,4 +1,4 @@
-import os, times
+import std/[os, times]
 
 import nimblepkg/[version, cli]
 import nimblepkg/common as nimble_common

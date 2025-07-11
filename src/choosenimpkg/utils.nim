@@ -1,4 +1,4 @@
-import httpclient, json, os, strutils, osproc, uri, sequtils
+import std/[httpclient, os, osproc, sequtils, strutils, uri]
 
 import nimblepkg/[cli, version]
 import zippy/tarballs as zippy_tarballs

@@ -2,7 +2,7 @@
 ##
 ## In the future these may become configurable.
 
-import strutils, tables, os
+import std/[os, strutils, tables]
 
 import nimblepkg/version
 
