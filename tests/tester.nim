@@ -68,7 +68,7 @@ proc exec(args: varargs[string], exe=exePath,
   if not global:
     quotedArgs.add("--nimbleDir:" & nimbleDir)
     if exe.splitFile().name != "nimble":
-      quotedArgs.add("--chooseNimDir:" & choosenimDir)
+      quotedArgs.add("--choosenimDir:" & choosenimDir)
   quotedArgs.add("--noColor")
 
   for i in 0..quotedArgs.len-1:
