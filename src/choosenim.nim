@@ -167,6 +167,10 @@ proc updateSelf(params: CliParams) =
   display("Info:", "Updated choosenim to version " & $version,
           Success, HighPriority)
 
+  # Any Nim installation currently activated by choosenim?
+  if $getCurrentVersion(params) != "":
+    discard installProxies(params)
+
 proc update(params: CliParams) =
   if params.commands.len != 2:
     raise newException(ChooseNimError,
