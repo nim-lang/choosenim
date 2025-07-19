@@ -7,14 +7,15 @@ const
   chooseNimVersion* = "0.8.16"
 
   proxies* = [
-      "nim",
-      "nimble",
-      "nimgrep",
-      "nimpretty",
-      "nimsuggest",
-      "testament",
-      "nim-gdb",
-    ]
+    "atlas",
+    "nim-gdb",
+    "nim",
+    "nimble",
+    "nimgrep",
+    "nimpretty",
+    "nimsuggest",
+    "testament",
+  ]
 
   mingwProxies* = [
     "gcc",
