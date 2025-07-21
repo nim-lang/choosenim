@@ -1,5 +1,10 @@
 # Choosenim changelog
 
+## Development
+
+* The ``CHOOSENIM_DIR`` environment variable is now supported, in addition to the
+  `--chosenimDir` command line flag.
+
 ## 0.8.4 - 06/07/2022
 
 This is minor release to resolve issues with OpenSSL on newer Linux distributions.

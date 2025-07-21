@@ -1,15 +1,14 @@
-import std/[os, strutils, osproc, pegs, json]
+import std/[os, osproc, strutils, pegs]
 
 import nimblepkg/[cli, version, options]
 from nimblepkg/tools import getNameVersionChecksum
 
 import cliparams, common
 
-when not defined(windows):
-  import utils
-
 when defined(windows):
   import env
+when defined(macosx):
+  from utils import isRosetta
 
 proc compileProxyexe(additionalMacOSFlag: string = "", proxyName = "proxyexe") =
   var cmd =

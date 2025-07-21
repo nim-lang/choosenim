@@ -1,4 +1,4 @@
-import os, algorithm, sequtils
+import std/[algorithm, os, sequtils]
 
 import nimblepkg/version
 from nimblepkg/tools import getNameVersionChecksum

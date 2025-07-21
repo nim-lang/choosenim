@@ -1,4 +1,4 @@
-import httpclient, strutils, os, osproc, terminal, times, json, uri
+import std/[httpclient, json, os, osproc, strutils, terminal, times, uri]
 
 when defined(curl):
   import math
@@ -7,8 +7,10 @@ import nimblepkg/[version, cli]
 when defined(curl):
   import libcurl except Version
 
-import cliparams, common, utils, switcher
+import cliparams, common, utils
 # import telemetry
+when defined(macosx):
+  from switcher import isAppleSilicon
 
 const
   githubTagReleasesUrl = "https://api.github.com/repos/nim-lang/Nim/tags"
@@ -50,7 +52,7 @@ proc getNightliesUrl(parsedContents: JsonNode, arch: int): (string, string) =
               if "arm64" in aname:
                 result = (url, tagName)
             else:
-              if "amd64" in aname:
+              if "x64" in aname:
                 result = (url, tagName)
         if result[0].len != 0:
           break
@@ -97,9 +99,11 @@ proc addGithubAuthentication(url: string): string =
     return url.replace("https://api.github.com", "https://" & ghtoken & "@api.github.com")
 
 when defined(curl):
+  type CurlError* = object of CatchableError
+
   proc checkCurl(code: Code) =
     if code != E_OK:
-      raise newException(AssertionError, "CURL failed: " & $easy_strerror(code))
+      raise newException(CurlError, "CURL failed: " & $easy_strerror(code))
 
   proc downloadFileCurl(url, outputPath: string) =
     displayDebug("Downloading using Curl")

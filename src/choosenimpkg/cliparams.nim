@@ -1,4 +1,4 @@
-import parseopt, strutils, os
+import std/[os, parseopt, strutils]
 
 import nimblepkg/[cli, options, config]
 import nimblepkg/common as nimble_common
@@ -173,7 +173,7 @@ proc writeNimbleBinDir(params: CliParams) =
 proc newCliParams*(proxyExeMode: bool): CliParams =
   new result
   result.commands = @[]
-  result.choosenimDir = getHomeDir() / ".choosenim"
+  result.choosenimDir = getEnv("CHOOSENIM_DIR", getHomeDir() / ".choosenim")
   # Init nimble params.
   try:
     result.nimbleOptions = initOptions()
