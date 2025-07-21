@@ -39,6 +39,28 @@ jobs:
           /home/runner/.nimble/bin/nim -v
           nimble test
 
+  build-linux_arm64:
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: devel
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build binary
+        run: |
+          # compile choosenim
+          nimble install -y
+          nimble build -d:release
+          ls bin/*
+      - name: Testing binaries
+        run: |
+          ${{ runner.workspace }}/choosenim/bin/choosenim devel
+          /home/runner/.nimble/bin/nim -v
+          nimble test
+
 
   # ----------------------------------------------------------------------------
   # this uses choosenim by itself - you may need to build manually if you break choosenim
