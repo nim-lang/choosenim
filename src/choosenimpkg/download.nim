@@ -100,7 +100,6 @@ proc getBinaryUrlFromReleasesJson(version: Version, platformStr: string): string
   try:
     let rawContents = retrieveUrl(releasesJsonUrl)
     let parsedContents = parseJson(rawContents)
-    
     let versionStr = $version
     if parsedContents.hasKey(versionStr):
       let versionData = parsedContents[versionStr]
@@ -113,7 +112,6 @@ proc getBinaryUrlFromReleasesJson(version: Version, platformStr: string): string
           return platformData["github_url"].getStr()
   except CatchableError as e:
     displayDebug("Could not fetch releases.json: " & e.msg)
-  
   return ""
 
 proc showIndeterminateBar(progress, speed: BiggestInt, lastPos: var int) =
