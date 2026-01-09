@@ -61,7 +61,12 @@ proc getNightliesUrl(parsedContents: JsonNode, arch: int): (string, string) =
       break
 
 proc getPlatformString(arch: int): string =
-  ## Returns the platform string used in releases.json
+  ## Returns the platform string used in releases.json.
+  ## This enables binary downloads for more platforms including:
+  ## - macOS ARM64 (Apple Silicon)
+  ## - Linux ARM64 (aarch64)
+  ## - Linux ARMv7l
+  ## Returns empty string if platform cannot be determined.
   when defined(windows):
     result = "windows_x" & $arch
   elif defined(linux):
@@ -88,8 +93,10 @@ proc getPlatformString(arch: int): string =
     result = ""
 
 proc getBinaryUrlFromReleasesJson(version: Version, platformStr: string): string =
-  ## Attempts to get the binary download URL from releases.json
-  ## Returns empty string if not found or if there's an error
+  ## Attempts to get the binary download URL from releases.json.
+  ## This is the new method that provides URLs for more binary platforms.
+  ## Prefers nimlang_url if available, otherwise uses github_url.
+  ## Returns empty string if not found or if there's an error (network, parsing, etc.)
   try:
     let rawContents = retrieveUrl(releasesJsonUrl)
     let parsedContents = parseJson(rawContents)
@@ -373,6 +380,11 @@ proc downloadImpl(version: Version, params: CliParams): string =
 
     var outputPath: string
 
+    # Binary download strategy:
+    # 1. Try to get binary URL from releases.json (supports more platforms)
+    # 2. Fall back to legacy URL construction for Windows/Linux x86
+    # 3. If binary download fails, fall back to source tarball
+    
     # Try to get binary URL from releases.json first
     let platformStr = getPlatformString(arch)
     var binUrl = ""
