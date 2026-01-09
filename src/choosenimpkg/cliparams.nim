@@ -107,7 +107,17 @@ proc getCurrentFile*(params: CliParams): string =
   ## Returns the path to the file which specifies the currently selected
   ## installation. The contents of this file is a path to the selected Nim
   ## directory.
-  return params.chooseNimDir / "current"
+  if params.choosenimDir.len == 0 or not params.choosenimDir.isAbsolute:
+    when defined(windows):
+      raise newException(ChooseNimError,
+        "Unable to determine choosenim directory. " &
+        "Please set the CHOOSENIM_DIR environment variable or ensure " &
+        "USERPROFILE (or HOMEDRIVE+HOMEPATH) environment variables are set correctly.")
+    else:
+      raise newException(ChooseNimError,
+        "Unable to determine choosenim directory. " &
+        "Please set the CHOOSENIM_DIR or HOME environment variable.")
+  return params.choosenimDir / "current"
 
 proc getCurrentChannelFile*(params: CliParams): string =
   return params.chooseNimDir / "current-channel"
@@ -173,7 +183,29 @@ proc writeNimbleBinDir(params: CliParams) =
 proc newCliParams*(proxyExeMode: bool): CliParams =
   new result
   result.commands = @[]
-  result.choosenimDir = getEnv("CHOOSENIM_DIR", getHomeDir() / ".choosenim")
+  
+  # Determine choosenim directory with proper validation
+  let choosenimDirEnv = getEnv("CHOOSENIM_DIR")
+  if choosenimDirEnv.len > 0:
+    result.choosenimDir = choosenimDirEnv
+  else:
+    let homeDir = getHomeDir()
+    if homeDir.len == 0:
+      # Fallback for Windows when USERPROFILE is not set (e.g., when run from make)
+      when defined(windows):
+        let homeDrive = getEnv("HOMEDRIVE")
+        let homePath = getEnv("HOMEPATH")
+        if homeDrive.len > 0 and homePath.len > 0:
+          result.choosenimDir = homeDrive & homePath / ".choosenim"
+        else:
+          # Use a placeholder that will cause a clear error later if not overridden
+          result.choosenimDir = ""
+      else:
+        # Use a placeholder that will cause a clear error later if not overridden
+        result.choosenimDir = ""
+    else:
+      result.choosenimDir = homeDir / ".choosenim"
+  
   # Init nimble params.
   try:
     result.nimbleOptions = initOptions()

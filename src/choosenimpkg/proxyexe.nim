@@ -55,7 +55,7 @@ proc getExePath*(params: CliParams): tuple[name, path: string]
     else:
       result.path = getSelectedPath(params) / "bin" / exe
   except Exception as exc:
-    let msg = "getAppFilename failed. (Error was: $1)" % exc.msg
+    let msg = "Failed to determine executable path. (Error was: $1)" % exc.msg
     raise newException(ChooseNimError, msg)
 
 proc main(params: CliParams) {.raises: [ChooseNimError, ValueError].} =
