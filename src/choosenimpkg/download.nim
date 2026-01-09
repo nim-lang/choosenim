@@ -16,6 +16,7 @@ const
   githubTagReleasesUrl = "https://api.github.com/repos/nim-lang/Nim/tags"
   githubNightliesReleasesUrl = "https://api.github.com/repos/nim-lang/nightlies/releases"
   githubUrl = "https://github.com/nim-lang/Nim"
+  releasesJsonUrl = "https://nim-lang.org/releases.json"
   websiteUrlXz = "https://nim-lang.org/download/nim-$1.tar.xz"
   websiteUrlGz = "https://nim-lang.org/download/nim-$1.tar.gz"
   csourcesUrl = "https://github.com/nim-lang/csources"
@@ -58,6 +59,55 @@ proc getNightliesUrl(parsedContents: JsonNode, arch: int): (string, string) =
           break
     if result[0].len != 0:
       break
+
+proc getPlatformString(arch: int): string =
+  ## Returns the platform string used in releases.json
+  when defined(windows):
+    result = "windows_x" & $arch
+  elif defined(linux):
+    # Detect ARM variants on Linux at runtime
+    let (uname, exitCode) = execCmdEx("uname -m")
+    if exitCode == 0:
+      let machine = uname.strip()
+      if machine == "armv7l":
+        result = "linux_armv7l"
+      elif machine == "aarch64" or machine == "arm64":
+        result = "linux_arm64"
+      else:
+        result = "linux_x" & $arch
+    else:
+      result = "linux_x" & $arch
+  elif defined(macosx):
+    if isAppleSilicon():
+      result = "macosx_arm64"
+    else:
+      result = "macosx_x64"
+  elif defined(freebsd):
+    result = "freebsd_x" & $arch
+  else:
+    result = ""
+
+proc getBinaryUrlFromReleasesJson(version: Version, platformStr: string): string =
+  ## Attempts to get the binary download URL from releases.json
+  ## Returns empty string if not found or if there's an error
+  try:
+    let rawContents = retrieveUrl(releasesJsonUrl)
+    let parsedContents = parseJson(rawContents)
+    
+    let versionStr = $version
+    if parsedContents.hasKey(versionStr):
+      let versionData = parsedContents[versionStr]
+      if versionData.hasKey(platformStr):
+        let platformData = versionData[platformStr]
+        # Prefer nimlang_url if available, otherwise use github_url
+        if platformData.hasKey("nimlang_url"):
+          return platformData["nimlang_url"].getStr()
+        elif platformData.hasKey("github_url"):
+          return platformData["github_url"].getStr()
+  except CatchableError as e:
+    displayDebug("Could not fetch releases.json: " & e.msg)
+  
+  return ""
 
 proc showIndeterminateBar(progress, speed: BiggestInt, lastPos: var int) =
   try:
@@ -323,10 +373,23 @@ proc downloadImpl(version: Version, params: CliParams): string =
 
     var outputPath: string
 
-    # Use binary builds for Windows and Linux
-    when defined(Windows) or defined(linux):
-      let os = when defined(linux): "-linux" else: ""
-      let binUrl = binaryUrl % [$version, os, $arch]
+    # Try to get binary URL from releases.json first
+    let platformStr = getPlatformString(arch)
+    var binUrl = ""
+    if platformStr.len > 0:
+      binUrl = getBinaryUrlFromReleasesJson(version, platformStr)
+      if binUrl.len > 0:
+        displayDebug("Using binary URL from releases.json: " & binUrl)
+
+    # Fall back to old method if releases.json didn't provide a URL
+    if binUrl.len == 0:
+      when defined(Windows) or defined(linux):
+        let os = when defined(linux): "-linux" else: ""
+        binUrl = binaryUrl % [$version, os, $arch]
+        displayDebug("Using legacy binary URL: " & binUrl)
+
+    # Try to download binary if we have a URL
+    if binUrl.len > 0:
       if not needsDownload(params, binUrl, outputPath): return outputPath
       try:
         downloadFile(binUrl, outputPath, params)
