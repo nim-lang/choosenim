@@ -196,7 +196,7 @@ proc newCliParams*(proxyExeMode: bool): CliParams =
         let homeDrive = getEnv("HOMEDRIVE")
         let homePath = getEnv("HOMEPATH")
         if homeDrive.len > 0 and homePath.len > 0:
-          result.choosenimDir = homeDrive & homePath / ".choosenim"
+          result.choosenimDir = (homeDrive & homePath) / ".choosenim"
         else:
           # Use a placeholder that will cause a clear error later if not overridden
           result.choosenimDir = ""
