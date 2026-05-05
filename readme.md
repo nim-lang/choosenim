@@ -81,12 +81,12 @@ wget -qO - https://nim-lang.org/choosenim/init.sh | sh
 
 **PATH setup** If `choosenim` has been installed successfully, and you're still not able to use Nim or any of the tooling (ex: `nim --v`) follow these steps in your terminal:
 - MacOs: modify or create the `~/.zshenv` file in your terminal, ex: `nano ~/.zshenv`
-- Linux: modify or create file `~/.bash_profile` in your terminal, ex: `nano ~/.bash_profile`
+- Linux: modify or create file `~/.bashrc` in your terminal, ex: `nano ~/.bashrc`
 - add the following line to setup the PATH correctly: `export PATH="$HOME/.nimble/bin:$PATH"`
-- make sure the current terminal session picks up the changes with this line: `source ~/.zshenv` or `source ~/.bash_profile`
+- make sure the current terminal session picks up the changes with this line: `source ~/.zshenv` or `source ~/.bashrc`
 - now validate everything works properly with: `nim --v`
 
-By creating a `.zshenv` or `.bash_profile` file and adding the path to `~/.nimble/bin`, you're ensuring that your shell (terminal) knows where to look for your Nim executables and other tooling every time it starts up.
+By creating a `.zshenv` or `.bashrc` file and adding the path to `~/.nimble/bin`, you're ensuring that your shell (terminal) knows where to look for your Nim executables and other tooling every time it starts up.
 
 ## How choosenim works
 
